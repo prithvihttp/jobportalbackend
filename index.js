@@ -16,10 +16,21 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
+
+
+const whitelist = [process.env.frontend_URL];
+console.log("Whitelist:", whitelist);
+
 const corsOptions = {
-    origin: process.env.frontend_URL,
-    credentials:true
-}
+  origin: function (origin, callback) {
+    if (!origin || whitelist.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+};
 
 app.use(cors(corsOptions));
 
